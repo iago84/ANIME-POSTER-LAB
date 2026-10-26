@@ -1,0 +1,16 @@
+# अनुवाद सूची — ANIME POSTER LAB
+# भाषा: हिन्दी (hi)
+msgid ""
+msgstr ""
+"Language: hi\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "ANIME POSTER LAB · API de generación de pósters y vídeo · versión {v}"
+msgstr "ANIME POSTER LAB · पोस्टर और वीडियो निर्माण API · संस्करण {v}"
+
+msgid "Idiomas disponibles: {langs}"
+msgstr "उपलब्ध भाषाएँ: {langs}"
+
+msgid "Anime Experimental Poster Lab API"
+msgstr "एनिमे प्रयोगात्मक पोस्टर लैब API"

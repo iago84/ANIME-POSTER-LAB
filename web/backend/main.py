@@ -1,23 +1,56 @@
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from typing import List, Optional
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional, List
-import json
-import sys
-import os
 
-# Add the poster_lab module to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-from poster_lab import process_concept, Technique, PosterLabOutput
+# El motor (`poster_lab.py`) y el paquete i18n viven en la raíz del proyecto,
+# dos niveles por encima de este fichero (web/backend/main.py).
+_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
-app = FastAPI(title="Anime Experimental Poster Lab API", version="2.5-AI")
+from poster_lab import Technique, process_concept  # noqa: E402
+from i18n_support import available as i18n_available  # noqa: E402
+from i18n_support import install as i18n_install  # noqa: E402
+from i18n_support import tr as _tr  # noqa: E402
+
+APP_VERSION = os.getenv("APP_VERSION", "2.5-AI")
+
+app = FastAPI(title="Anime Experimental Poster Lab API", version=APP_VERSION)
+
+
+def _cors_origins() -> list:
+    """Orígenes permitidos: SOLO desde `CORS_ALLOWED_ORIGINS` (lista explícita).
+
+    `allow_origins=["*"]` junto con `allow_credentials=True` es inseguro: la
+    spec lo prohíbe porque Starlette acaba reflejando el `Origin` de cada
+    petición (queda abierto). Ver ARTEFACTOS_TRAE/E3_fastapi_safe_degradation.py.
+    """
+    raw = (os.getenv("CORS_ALLOWED_ORIGINS") or "").strip()
+    origins = [o.strip() for o in raw.split(",") if o.strip()]
+    if origins:
+        return origins
+    # Sin configurar: se deniega por defecto y solo se permite frontend local.
+    return [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+    ]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_cors_origins(),
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
 )
 
 class GenerateRequest(BaseModel):
@@ -38,8 +71,41 @@ class TechniqueInfo(BaseModel):
     palette_example: List[str]
 
 @app.get("/")
-async def root():
-    return {"message": "Anime Experimental Poster Lab API", "version": "2.5-AI"}
+async def root(lang: Optional[str] = None):
+    """Identificación del servicio. `?lang=` elige el idioma de la respuesta."""
+    activo = i18n_install(lang)
+    return {
+        "message": _tr("Anime Experimental Poster Lab API"),
+        "version": APP_VERSION,
+        "lang": activo,
+        "languages": list(i18n_available()),
+    }
+
+
+@app.get("/i18n/languages")
+async def i18n_languages():
+    """Idiomas soportados por la API."""
+    return {"languages": list(i18n_available()), "default": i18n_install(None)}
+
+
+@app.get("/health/")
+async def health():
+    """Sonda de salud (liveness). Sin auth ni secretos: solo estado y versión."""
+    try:
+        engine_ok = len(list(Technique)) > 0
+    except Exception:  # noqa: BLE001  (una sonda jamás debe caerse)
+        engine_ok = False
+    payload = {
+        "status": "ok" if engine_ok else "degraded",
+        "version": APP_VERSION,
+        "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "checks": {"engine": engine_ok},
+    }
+    return JSONResponse(
+        payload,
+        status_code=200 if engine_ok else 503,
+        headers={"Cache-Control": "no-store"},
+    )
 
 @app.get("/techniques", response_model=List[TechniqueInfo])
 async def list_techniques():
@@ -166,4 +232,10 @@ async def generate_video_prompt(request: GenerateRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    uvicorn.run(
+        app,
+        host=os.getenv("APP_HOST", "127.0.0.1"),
+        port=int(os.getenv("APP_PORT", "8012")),
+        log_level=os.getenv("LOG_LEVEL", "info"),
+    )

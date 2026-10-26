@@ -1,0 +1,48 @@
+# =============================================================================
+#  animeposter.service — Unit systemd (0-Docker: venv + uvicorn + nginx)
+#  Derivado de ARTEFACTOS_TRAE/C3_svc.service.template, adaptado a ASGI/uvicorn
+#  (el proyecto es FastAPI, no Django/gunicorn).
+# =============================================================================
+#
+#  Copiar a /etc/systemd/system/animeposter.service  (lo hace SETUP_ALL.sh):
+#    sudo cp deploy/linode/animeposter.service /etc/systemd/system/animeposter.service
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable --now animeposter.service
+#
+#  Requisitos:
+#    - venv en /opt/animeposter/venv con las dependencias (pip install -r requirements.txt).
+#    - Código en /opt/animeposter/app (con web/backend/main.py y poster_lab.py).
+#    - /etc/animeposter.env (0600) con APP_PORT, CORS_ALLOWED_ORIGINS, etc.
+# =============================================================================
+
+[Unit]
+Description=Uvicorn daemon for animeposter (FastAPI, 0-Docker)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+# Directorio de trabajo = raíz del proyecto (aquí viven poster_lab.py y web/).
+WorkingDirectory=/opt/animeposter/app
+# Variables de entorno (secreto). Debe existir y no ser world-readable.
+EnvironmentFile=/etc/animeposter.env
+# uvicorn escucha SOLO en loopback; el proxy público es nginx.
+ExecStart=/opt/animeposter/venv/bin/uvicorn web.backend.main:app \
+  --host 127.0.0.1 \
+  --port 8012 \
+  --workers 3 \
+  --proxy-headers \
+  --forwarded-allow-ips 127.0.0.1
+Restart=always
+RestartSec=5
+
+# --- Hardening básico ---
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/animeposter
+
+[Install]
+WantedBy=multi-user.target

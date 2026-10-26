@@ -1,0 +1,16 @@
+# Catálogo de traducción — ANIME POSTER LAB
+# Idioma: español (es)
+msgid ""
+msgstr ""
+"Language: es\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "ANIME POSTER LAB · API de generación de pósters y vídeo · versión {v}"
+msgstr "ANIME POSTER LAB · API de generación de pósters y vídeo · versión {v}"
+
+msgid "Idiomas disponibles: {langs}"
+msgstr "Idiomas disponibles: {langs}"
+
+msgid "Anime Experimental Poster Lab API"
+msgstr "API del Laboratorio de Pósters Anime Experimentales"

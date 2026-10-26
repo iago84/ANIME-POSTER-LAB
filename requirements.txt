@@ -1,0 +1,11 @@
+# ANIME POSTER LAB — dependencias (runtime + tests)
+# Sin versiones fijas: se acepta la última versión estable compatible.
+
+# --- API HTTP ---
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+
+# --- Tests ---
+pytest>=8.3
+httpx>=0.27

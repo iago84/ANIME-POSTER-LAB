@@ -1,0 +1,16 @@
+# 翻訳カタログ — ANIME POSTER LAB
+# 言語: 日本語 (ja)
+msgid ""
+msgstr ""
+"Language: ja\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "ANIME POSTER LAB · API de generación de pósters y vídeo · versión {v}"
+msgstr "ANIME POSTER LAB · ポスター＆動画生成API · バージョン {v}"
+
+msgid "Idiomas disponibles: {langs}"
+msgstr "利用可能な言語: {langs}"
+
+msgid "Anime Experimental Poster Lab API"
+msgstr "アニメ実験ポスターラボAPI"
