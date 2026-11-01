@@ -1,0 +1,22 @@
+{
+  "branch": "main",
+  "app": "ANIME POSTER LAB",
+  "versionedAt": "2026-10-28",
+  "tag": "0.0.1",
+  "history": [
+    {
+      "version": "0.0.1",
+      "type": "minor",
+      "reason": "core",
+      "files": 0,
+      "at": "2026-10-28"
+    }
+  ],
+  "_base": "0.0.1",
+  "version": "0.0.1",
+  "commitRole": "parent",
+  "previous_version": null,
+  "bump": "minor",
+  "bump_reason": "core",
+  "changed_files": 0
+}
