@@ -66,3 +66,44 @@ dmypy.json
 
 # Jupyter
 .ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Completado por _tools/aplicar_convenciones.py
+# ---------------------------------------------------------------------------
+*.pyo
+*.pyc
+*.pyd
+.env.*
+!.env.example
+*.pem
+*.key
+id_rsa*
+*.p12
+*.pfx
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+*.sqlite
+*.dump
+db_backup.sql
+db_backup*.sql
+node_modules/
+.next/
+.nuxt/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.ruff_cache/
+.cache/
+.argos_translate/
+.kilo/
+*.spec.bak
+*.manifest
+staticfiles/
+media/avatars/
+media/posts/
+media/uploads/
+.tmp/
+tmp/
+*_tmp.py
+_tmp_*.py
